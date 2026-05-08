@@ -1,0 +1,226 @@
+<!-- ═══════════════════════════════════════════════════════
+     MAIN LAYOUT CONTAINER
+     mat-sidenav-container fills the entire viewport
+     ═══════════════════════════════════════════════════════ -->
+<mat-sidenav-container class="chat-container">
+<!-- ═══════════════════════════════════════════════════
+     SIDEBAR (Left Panel)
+     mode="side"     → fixed beside content
+     opened          → always visible (no toggle needed on desktop)
+     position="start" → on the left side
+     ═══════════════════════════════════════════════════ -->
+<mat-sidenav
+  class="chat-sidenav"
+  mode="side"
+  opened
+  position="start">
+
+  <!-- Sidebar Header -->
+  <div class="sidenav-header">
+    <span class="app-title">🤖 AI Chatbot</span>
+
+    <!-- New Chat Button -->
+    <button
+      mat-icon-button
+      matTooltip="New Chat"
+      [disabled]="isCreatingChat()"
+      (click)="createNewChat()">
+
+      <!-- Show spinner while creating, icon otherwise -->
+      @if (isCreatingChat()) {
+        <mat-spinner diameter="20"/>
+      } @else {
+        <mat-icon>add</mat-icon>
+      }
+    </button>
+  </div>
+
+  <!-- Divider Line -->
+  <div class="sidenav-divider"></div>
+
+  <!-- Chat List -->
+  <div class="chat-list-container">
+
+    <!-- Loading State -->
+    @if (isLoadingChats()) {
+      <div class="loading-state">
+        <mat-spinner diameter="24"/>
+        <span>Loading chats...</span>
+      </div>
+    }
+
+    <!-- Empty State (no chats yet) -->
+    @if (!isLoadingChats() && chats().length === 0) {
+      <div class="empty-state">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <p>No chats yet</p>
+        <small>Click + to start a new chat</small>
+      </div>
+    }
+
+    <!-- Chat Items List -->
+    @if (!isLoadingChats() && chats().length > 0) {
+      <mat-nav-list>
+        @for (chat of chats(); track chat.id) {
+          <mat-list-item
+            [class.active]="isActive(chat)"
+            (click)="selectChat(chat)">
+
+            <!-- LEFT: Chat icon -->
+            <mat-icon matListItemIcon>chat</mat-icon>
+
+            <!-- MIDDLE: Title + Timestamp stacked vertically -->
+            <span matListItemTitle>{{ chat.title }}</span>
+            <span matListItemLine class="chat-timestamp">
+          {{ chat.createdAt | timeAgo }}
+        </span>
+
+            <!-- RIGHT: More options button -->
+            <div matListItemMeta>
+              <button
+                mat-icon-button
+                [matMenuTriggerFor]="chatMenu"
+                (click)="$event.stopPropagation()">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #chatMenu="matMenu">
+                <button mat-menu-item (click)="openDeleteDialog(chat.id, $event)">
+                  <mat-icon color="warn">delete</mat-icon>
+                  <span>Delete</span>
+                </button>
+              </mat-menu>
+            </div>
+
+          </mat-list-item>
+        }
+      </mat-nav-list>
+    }
+
+  </div>
+</mat-sidenav>
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN CONTENT (Right Panel)
+     ═══════════════════════════════════════════════════ -->
+<mat-sidenav-content class="chat-content">
+
+  <!-- Toolbar -->
+  <mat-toolbar class="chat-toolbar">
+    <span>{{ activeChat()?.title ?? 'Select or create a chat' }}</span>
+    <span class="flex-spacer"></span>
+  </mat-toolbar>
+
+  <!-- No Chat Selected -->
+  @if (!activeChat()) {
+    <div class="welcome-state">
+      <mat-icon class="welcome-icon">smart_toy</mat-icon>
+      <h2>Welcome to AI Chatbot</h2>
+      <p>Create a new chat or select one from the sidebar</p>
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="isCreatingChat()"
+        (click)="createNewChat()">
+        <mat-icon>add</mat-icon>
+        New Chat
+      </button>
+    </div>
+  }
+
+  <!-- Active Chat -->
+  @if (activeChat()) {
+    <div class="active-chat-wrapper">
+
+      <!-- Messages Area -->
+      <div class="messages-container" #messagesContainer>
+
+        <!-- Loading messages -->
+        @if (isLoadingMessages()) {
+          <div class="messages-loading">
+            <mat-spinner diameter="32"/>
+            <span>Loading messages...</span>
+          </div>
+        }
+
+        <!-- Empty chat -->
+        @if (!isLoadingMessages() && messages().length === 0) {
+          <div class="messages-empty">
+            <mat-icon>chat_bubble_outline</mat-icon>
+            <p>No messages yet. Say hello! 👋</p>
+          </div>
+        }
+
+        <!-- Message Bubbles -->
+        @for (message of messages(); track message.id) {
+          <div class="message-row"
+               [class.user-row]="message.senderType === 'USER'"
+               [class.bot-row]="message.senderType === 'BOT'">
+
+            <!-- Bot avatar -->
+            @if (message.senderType === 'BOT') {
+              <div class="avatar bot-avatar">
+                <mat-icon>smart_toy</mat-icon>
+              </div>
+            }
+
+            <!-- Message bubble -->
+            <div class="message-bubble"
+                 [class.user-bubble]="message.senderType === 'USER'"
+                 [class.bot-bubble]="message.senderType === 'BOT'">
+              {{ message.content }}
+            </div>
+
+            <!-- User avatar -->
+            @if (message.senderType === 'USER') {
+              <div class="avatar user-avatar">
+                <mat-icon>person</mat-icon>
+              </div>
+            }
+
+          </div>
+        }
+
+        <!-- Bot typing indicator -->
+        @if (isSendingMessage()) {
+          <div class="message-row bot-row">
+            <div class="avatar bot-avatar">
+              <mat-icon>smart_toy</mat-icon>
+            </div>
+            <div class="message-bubble bot-bubble typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        }
+
+      </div>
+
+      <!-- Input Area -->
+      <div class="input-area">
+        <div class="input-wrapper">
+          <input
+            class="message-input"
+            placeholder="Type a message..."
+            [value]="messageInput()"
+            [disabled]="isSendingMessage()"
+            (input)="messageInput.set($any($event.target).value)"
+            (keyup.enter)="sendMessage()"/>
+
+          <button
+            mat-icon-button
+            color="primary"
+            class="send-button"
+            matTooltip="Send message"
+            [disabled]="!messageInput().trim() || isSendingMessage()"
+            (click)="sendMessage()">
+            <mat-icon>send</mat-icon>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  }
+
+</mat-sidenav-content>
+</mat-sidenav-container>

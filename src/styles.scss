@@ -1,0 +1,104 @@
+// ─── 1. Import Angular Material ───────────────────────────
+@use '@angular/material' as mat;
+
+// ─── 2. Import Our Partials ───────────────────────────────
+@use 'styles/variables' as *;    // as * = use variables WITHOUT prefix
+
+// ─── 3. Include Material Core ─────────────────────────────
+@include mat.core();
+
+// ─── 4. Define Theme ──────────────────────────────────────
+$chatbot-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$violet-palette,
+    tertiary: mat.$blue-palette
+  ),
+  typography: (
+    brand-family: '"Inter", "Roboto", sans-serif',
+    plain-family: '"Inter", "Roboto", sans-serif'
+  ),
+  density: (
+    scale: 0
+  )
+));
+
+// ─── 5. Apply Theme ───────────────────────────────────────
+html {
+  @include mat.all-component-themes($chatbot-theme);
+}
+
+// ─── 6. Global Base Styles ────────────────────────────────
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: $text-primary;           // ← Comes from _variables.scss now
+  background-color: $bg-light;    // ← Comes from _variables.scss now
+  -webkit-font-smoothing: antialiased;
+}
+
+// ─── 7. Global Utilities ──────────────────────────────────
+.flex-spacer {
+  flex: 1 1 auto;
+}
+
+// ─── Toast Notification Styles ────────────────────────────────────────────────
+
+.snack-success {
+  // Target the Material snackbar container
+  .mdc-snackbar__surface {
+    background-color: #2e7d32 !important;  // Dark green
+  }
+
+  .mdc-snackbar__label,
+  .mat-mdc-snack-bar-label {
+    color: #ffffff !important;
+  }
+
+  .mat-mdc-button.mat-mdc-snack-bar-action {
+    color: #a5d6a7 !important;  // Light green for "Close" button
+  }
+}
+
+.snack-error {
+  .mdc-snackbar__surface {
+    background-color: #c62828 !important;  // Dark red
+  }
+
+  .mdc-snackbar__label,
+  .mat-mdc-snack-bar-label {
+    color: #ffffff !important;
+  }
+
+  .mat-mdc-button.mat-mdc-snack-bar-action {
+    color: #ef9a9a !important;  // Light red for "Close" button
+  }
+}
+
+.snack-info {
+  .mdc-snackbar__surface {
+    background-color: #1565c0 !important;  // Dark blue
+  }
+
+  .mdc-snackbar__label,
+  .mat-mdc-snack-bar-label {
+    color: #ffffff !important;
+  }
+
+  .mat-mdc-button.mat-mdc-snack-bar-action {
+    color: #90caf9 !important;  // Light blue for "Close" button
+  }
+}

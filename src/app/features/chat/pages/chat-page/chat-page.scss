@@ -1,0 +1,295 @@
+@use '../../../../../styles/variables' as *;
+
+// ─── Root ─────────────────────────────────────────────────
+.chat-container {
+  height: 100vh;
+  width: 100vw;
+}
+
+// ─── Sidebar ──────────────────────────────────────────────
+.chat-sidenav {
+  width: $sidebar-width;
+  background-color: $bg-sidebar;
+  border-right: 1px solid $border-color;
+  display: flex;
+  flex-direction: column;
+
+  .sidenav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 $spacing-sm 0 $spacing-md;
+    height: $header-height;
+    flex-shrink: 0;
+
+    .app-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: $text-primary;
+    }
+  }
+
+  .sidenav-divider {
+    height: 1px;
+    background-color: $border-color;
+    flex-shrink: 0;
+  }
+
+  .chat-list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-sm 0;
+
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 4px;
+    }
+  }
+
+  .loading-state,
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-xl $spacing-md;
+    text-align: center;
+    color: $text-secondary;
+
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      opacity: 0.4;
+    }
+
+    p { font-size: 14px; font-weight: 500; margin: 0; }
+    small { font-size: 12px; opacity: 0.7; }
+  }
+
+  mat-list-item {
+    border-radius: $border-radius-sm;
+    margin: 2px $spacing-sm;
+    cursor: pointer;
+
+    &.active { background-color: $active-color; }
+
+    &:hover:not(.active) {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+    .chat-timestamp {
+      font-size: 11px;
+      color: $text-secondary;
+      opacity: 0.8;
+    }
+  }
+}
+
+// ─── Main Content ─────────────────────────────────────────
+.chat-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+
+  .chat-toolbar {
+    flex-shrink: 0;
+    border-bottom: 1px solid $border-color;
+    background-color: $bg-white;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+// ─── Welcome State ────────────────────────────────────────
+.welcome-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-md;
+  flex: 1;
+  text-align: center;
+  padding: $spacing-xl;
+  color: $text-secondary;
+
+  .welcome-icon {
+    font-size: 72px;
+    width: 72px;
+    height: 72px;
+    opacity: 0.3;
+  }
+
+  h2 { font-size: 24px; font-weight: 600; color: $text-primary; margin: 0; }
+  p  { font-size: 16px; margin: 0; }
+}
+
+// ─── Active Chat Wrapper ──────────────────────────────────
+.active-chat-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;           // Critical — contains scroll inside messages area
+}
+
+// ─── Messages Area ────────────────────────────────────────
+.messages-container {
+  flex: 1;
+  overflow-y: auto;           // THIS area scrolls — not the whole page
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  background-color: $bg-light;
+
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+  }
+}
+
+.messages-loading,
+.messages-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  flex: 1;
+  color: $text-secondary;
+  min-height: 200px;
+
+  mat-icon { font-size: 40px; width: 40px; height: 40px; opacity: 0.3; }
+  p { font-size: 14px; margin: 0; }
+}
+
+// ─── Message Rows ─────────────────────────────────────────
+.message-row {
+  display: flex;
+  align-items: flex-end;
+  gap: $spacing-sm;
+  max-width: 75%;             // Messages never stretch full width
+
+  &.user-row {
+    align-self: flex-end;     // Push to the RIGHT
+    flex-direction: row;      // Avatar after bubble (avatar on right)
+  }
+
+  &.bot-row {
+    align-self: flex-start;   // Push to the LEFT
+    flex-direction: row;      // Avatar before bubble (avatar on left)
+  }
+}
+
+// ─── Avatars ──────────────────────────────────────────────
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;         // Circle
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;             // Never compress the avatar
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &.user-avatar {
+    background-color: #6200ea;
+    mat-icon { color: white; }
+  }
+
+  &.bot-avatar {
+    background-color: #e8e8e8;
+    mat-icon { color: #555; }
+  }
+}
+
+// ─── Message Bubbles ──────────────────────────────────────
+.message-bubble {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-md;
+  font-size: 15px;
+  line-height: 1.5;
+  word-wrap: break-word;      // Long words don't overflow bubble
+  max-width: 100%;
+
+  &.user-bubble {
+    background-color: #6200ea;
+    color: white;
+    border-bottom-right-radius: $border-radius-sm;  // Tail effect
+  }
+
+  &.bot-bubble {
+    background-color: $bg-white;
+    color: $text-primary;
+    border: 1px solid $border-color;
+    border-bottom-left-radius: $border-radius-sm;   // Tail effect
+  }
+}
+
+// ─── Typing Indicator (animated dots) ─────────────────────
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: $spacing-sm 14px;
+
+  span {
+    width: 8px;
+    height: 8px;
+    background-color: #aaa;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+
+    // Stagger each dot's animation
+    &:nth-child(1) { animation-delay: 0s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; }
+  }
+}
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30%           { transform: translateY(-6px); }
+}
+
+// ─── Input Area ───────────────────────────────────────────
+.input-area {
+  flex-shrink: 0;             // Never compress
+  background-color: $bg-white;
+  border-top: 1px solid $border-color;
+  padding: $spacing-sm $spacing-md;
+
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    background-color: $bg-light;
+    border: 1px solid $border-color;
+    border-radius: 24px;      // Pill shape — like WhatsApp
+    padding: $spacing-xs $spacing-xs $spacing-xs $spacing-md;
+    transition: border-color 0.2s;
+
+    &:focus-within {          // When input inside is focused
+      border-color: #6200ea;
+    }
+  }
+
+  .message-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 15px;
+    color: $text-primary;
+
+    &::placeholder { color: #aaa; }
+    &:disabled { cursor: not-allowed; opacity: 0.6; }
+  }
+
+  .send-button {
+    flex-shrink: 0;
+  }
+}
