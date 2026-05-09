@@ -167,7 +167,17 @@
             <div class="message-bubble"
                  [class.user-bubble]="message.senderType === 'USER'"
                  [class.bot-bubble]="message.senderType === 'BOT'">
-              {{ message.content }}
+
+              <!-- User messages: plain text -->
+              @if (message.senderType === 'USER') {
+                {{ message.content }}
+              }
+
+              <!-- Bot messages: render markdown as HTML -->
+              @if (message.senderType === 'BOT') {
+                <div [innerHTML]="message.content | markdown"></div>
+              }
+
             </div>
 
             <!-- User avatar -->

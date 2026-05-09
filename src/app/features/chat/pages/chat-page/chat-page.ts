@@ -17,6 +17,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { TimeAgoPipe } from '../../../../shared/pipes/time-ago-pipe';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { MarkdownPipe } from '../../../../shared/pipes/markdown-pipe';
 
 @Component({
   selector: 'app-chat-page',
@@ -34,6 +35,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
     MatMenuModule,
     MatDialogModule,
     TimeAgoPipe,
+    MarkdownPipe,
   ],
   templateUrl: './chat-page.html',
   styleUrl: './chat-page.scss',
@@ -193,7 +195,7 @@ export class ChatPage implements OnInit {
       },
     });
   }
-  
+
   /**
    * Select an existing chat to view.
    */
