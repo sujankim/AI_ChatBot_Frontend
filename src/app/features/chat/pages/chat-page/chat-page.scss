@@ -1,33 +1,48 @@
 @use '../../../../../styles/variables' as *;
+@use 'sass:color';
 
-// ─── Root ─────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// ROOT CONTAINER
+// ═══════════════════════════════════════════════════════════════════════════════
+
 .chat-container {
   height: 100vh;
   width: 100vw;
+  display: flex;
+  overflow: hidden;
 }
 
-// ─── Sidebar ──────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════════════════════════════════
+
 .chat-sidenav {
   width: $sidebar-width;
   background-color: $bg-sidebar;
   border-right: 1px solid $border-color;
   display: flex;
-  flex-direction: column;
+  flex-direction: column;     // Stack: header | divider | list | footer
+  overflow: hidden;           // Prevent sidenav itself from scrolling
+
+  // ── Header ────────────────────────────────────────────────────────────────
 
   .sidenav-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 $spacing-sm 0 $spacing-md;
+    padding: 0 $spacing-xs 0 $spacing-md;
     height: $header-height;
-    flex-shrink: 0;
+    flex-shrink: 0;           // Never compress
 
     .app-title {
-      font-size: 18px;
-      font-weight: 600;
+      font-size: 17px;
+      font-weight: 700;
       color: $text-primary;
+      letter-spacing: -0.3px;
     }
   }
+
+  // ── Divider ───────────────────────────────────────────────────────────────
 
   .sidenav-divider {
     height: 1px;
@@ -35,20 +50,26 @@
     flex-shrink: 0;
   }
 
-  .chat-list-container {
-    flex: 1;
-    overflow-y: auto;
-    padding: $spacing-sm 0;
+  // ── Chat List ─────────────────────────────────────────────────────────────
 
-    &::-webkit-scrollbar { width: 4px; }
+  .chat-list-container {
+    flex: 1;                  // Takes all remaining vertical space
+    overflow-y: auto;         // Scrollable
+    padding: $spacing-xs 0;
+    min-height: 0;            // Required for flex children to scroll correctly
+
+    // Subtle scrollbar
+    &::-webkit-scrollbar       { width: 4px; }
+    &::-webkit-scrollbar-track { background: transparent; }
     &::-webkit-scrollbar-thumb {
-      background: #ccc;
+      background: $border-color;
       border-radius: 4px;
     }
   }
 
-  .loading-state,
-  .empty-state {
+  // ── List State (loading / empty) ──────────────────────────────────────────
+
+  .list-state {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -61,219 +82,476 @@
       font-size: 40px;
       width: 40px;
       height: 40px;
-      opacity: 0.4;
+      opacity: 0.35;
     }
 
-    p { font-size: 14px; font-weight: 500; margin: 0; }
+    p     { font-size: 14px; font-weight: 500; margin: 0; }
     small { font-size: 12px; opacity: 0.7; }
   }
 
-  mat-list-item {
-    border-radius: $border-radius-sm;
-    margin: 2px $spacing-sm;
-    cursor: pointer;
+  // ── Chat List Items ────────────────────────────────────────────────────────
 
-    &.active { background-color: $active-color; }
+  mat-nav-list {
+    padding: 0;
 
-    &:hover:not(.active) {
-      background-color: rgba(0, 0, 0, 0.04);
+    mat-list-item {
+      border-radius: $border-radius-sm;
+      margin: 2px $spacing-sm;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+
+      // Active (selected) state
+      &.active {
+        background-color: $active-color;
+
+        // Bold title for active chat
+        ::ng-deep .mat-mdc-list-item-title {
+          font-weight: 600;
+          color: #6200ea;
+        }
+      }
+
+      // Hover (not active)
+      &:hover:not(.active) {
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+
+      // Timestamp subtitle
+      .chat-timestamp {
+        font-size: 11px;
+        color: $text-secondary;
+        opacity: 0.8;
+      }
+
+      // More options button — hidden by default, shown on hover/active
+      .chat-menu-btn {
+        opacity: 0;
+        transition: opacity 0.15s ease;
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+
+        mat-icon { font-size: 18px; }
+      }
+
+      &:hover .chat-menu-btn,
+      &.active .chat-menu-btn {
+        opacity: 1;
+      }
     }
-    .chat-timestamp {
-      font-size: 11px;
+  }
+
+  // ── Sidebar Footer ─────────────────────────────────────────────────────────
+
+  .sidenav-footer {
+    flex-shrink: 0;
+
+    .user-info-row {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      padding: $spacing-sm $spacing-xs $spacing-sm $spacing-md;
+      height: 64px;
+    }
+
+    .user-avatar-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background-color: #6200ea;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+
+    .user-details {
+      flex: 1;
+      min-width: 0;             // Required for text-overflow to work in flex
+
+      .user-display-name {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: $text-primary;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-email-text {
+        display: block;
+        font-size: 11px;
+        color: $text-secondary;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .logout-btn {
+      flex-shrink: 0;
       color: $text-secondary;
-      opacity: 0.8;
+      transition: color 0.15s ease;
+
+      &:hover { color: #c62828; }   // Red on hover — signals destructive action
     }
   }
 }
 
-// ─── Main Content ─────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN CONTENT (Right Panel)
+// ═══════════════════════════════════════════════════════════════════════════════
+
 .chat-content {
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
 
+  // ── Toolbar ───────────────────────────────────────────────────────────────
+
   .chat-toolbar {
     flex-shrink: 0;
-    border-bottom: 1px solid $border-color;
     background-color: $bg-white;
-    font-size: 16px;
-    font-weight: 500;
+    border-bottom: 1px solid $border-color;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    z-index: 1;               // Stays above message list on scroll
+
+    .toolbar-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: $text-primary;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }
 
-// ─── Welcome State ────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// WELCOME STATE (no chat selected)
+// ═══════════════════════════════════════════════════════════════════════════════
+
 .welcome-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: $spacing-md;
   flex: 1;
-  text-align: center;
+  gap: $spacing-md;
   padding: $spacing-xl;
-  color: $text-secondary;
+  text-align: center;
 
   .welcome-icon {
-    font-size: 72px;
-    width: 72px;
-    height: 72px;
-    opacity: 0.3;
+    font-size: 80px;
+    width: 80px;
+    height: 80px;
+    color: #6200ea;
+    opacity: 0.25;
   }
 
-  h2 { font-size: 24px; font-weight: 600; color: $text-primary; margin: 0; }
-  p  { font-size: 16px; margin: 0; }
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0;
+  }
+
+  p {
+    font-size: 15px;
+    color: $text-secondary;
+    margin: 0;
+    max-width: 300px;
+    line-height: 1.5;
+  }
+
+  .welcome-new-chat-btn {
+    margin-top: $spacing-xs;
+    height: 42px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
 }
 
-// ─── Active Chat Wrapper ──────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// ACTIVE CHAT WRAPPER
+// ═══════════════════════════════════════════════════════════════════════════════
+
 .active-chat-wrapper {
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow: hidden;           // Critical — contains scroll inside messages area
+  overflow: hidden;           // Critical: contains scroll INSIDE messages area
 }
 
-// ─── Messages Area ────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// MESSAGES CONTAINER
+// ═══════════════════════════════════════════════════════════════════════════════
+
 .messages-container {
   flex: 1;
-  overflow-y: auto;           // THIS area scrolls — not the whole page
+  overflow-y: auto;           // Only this scrolls — not the whole page
   padding: $spacing-lg;
   display: flex;
   flex-direction: column;
   gap: $spacing-sm;
   background-color: $bg-light;
 
-  &::-webkit-scrollbar { width: 6px; }
+  // Scrollbar
+  &::-webkit-scrollbar       { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb {
-    background: #ccc;
+    background: $border-color;
     border-radius: 4px;
+    &:hover { background: color.adjust($border-color, $lightness: -10%); }
   }
 }
 
-.messages-loading,
-.messages-empty {
+// ── Messages Loading / Empty State ────────────────────────────────────────────
+
+.messages-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: $spacing-sm;
   flex: 1;
+  gap: $spacing-sm;
   color: $text-secondary;
   min-height: 200px;
 
-  mat-icon { font-size: 40px; width: 40px; height: 40px; opacity: 0.3; }
+  mat-icon {
+    font-size: 44px;
+    width: 44px;
+    height: 44px;
+    opacity: 0.3;
+  }
+
   p { font-size: 14px; margin: 0; }
 }
 
-// ─── Message Rows ─────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// MESSAGE ROWS
+// ═══════════════════════════════════════════════════════════════════════════════
+
 .message-row {
   display: flex;
   align-items: flex-end;
   gap: $spacing-sm;
-  max-width: 75%;             // Messages never stretch full width
+  max-width: 78%;             // Messages never take full width
 
+  // User messages → right side
   &.user-row {
-    align-self: flex-end;     // Push to the RIGHT
-    flex-direction: row;      // Avatar after bubble (avatar on right)
+    align-self: flex-end;
+    flex-direction: row-reverse;  // Avatar on the right
   }
 
+  // Bot messages → left side
   &.bot-row {
-    align-self: flex-start;   // Push to the LEFT
-    flex-direction: row;      // Avatar before bubble (avatar on left)
+    align-self: flex-start;
+    flex-direction: row;          // Avatar on the left
   }
 }
 
-// ─── Avatars ──────────────────────────────────────────────
+// ── Avatars ───────────────────────────────────────────────────────────────────
+
 .avatar {
   width: 32px;
   height: 32px;
-  border-radius: 50%;         // Circle
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;             // Never compress the avatar
-
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  flex-shrink: 0;
 
   &.user-avatar {
     background-color: #6200ea;
-    mat-icon { color: white; }
+
+    .avatar-initial {
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
   }
 
   &.bot-avatar {
-    background-color: #e8e8e8;
-    mat-icon { color: #555; }
+    background-color: #ede7f6;   // Light purple
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #6200ea;
+    }
   }
 }
 
-// ─── Message Bubbles ──────────────────────────────────────
+// ── Message Bubbles ───────────────────────────────────────────────────────────
+
 .message-bubble {
   padding: $spacing-sm $spacing-md;
   border-radius: $border-radius-md;
   font-size: 15px;
-  line-height: 1.5;
-  word-wrap: break-word;      // Long words don't overflow bubble
+  line-height: 1.55;
+  word-wrap: break-word;      // Break very long words
   max-width: 100%;
+  position: relative;
 
+  // User bubble: violet, right-aligned
   &.user-bubble {
     background-color: #6200ea;
     color: white;
-    border-bottom-right-radius: $border-radius-sm;  // Tail effect
+    border-bottom-right-radius: $border-radius-sm;   // Tail effect
   }
 
+  // Bot bubble: white, left-aligned
   &.bot-bubble {
     background-color: $bg-white;
     color: $text-primary;
     border: 1px solid $border-color;
-    border-bottom-left-radius: $border-radius-sm;   // Tail effect
+    border-bottom-left-radius: $border-radius-sm;    // Tail effect
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   }
 }
 
-// ─── Typing Indicator (animated dots) ─────────────────────
+// ── Markdown Rendering Inside Bot Bubble ──────────────────────────────────────
+// Bot responses come from Gemini as markdown — we render them as HTML
+
+.bot-bubble {
+
+  p {
+    margin: 0 0 $spacing-sm;
+    &:last-child { margin-bottom: 0; }
+  }
+
+  // Fenced code blocks
+  pre {
+    background-color: #1e1e2e;
+    border-radius: $border-radius-sm;
+    padding: $spacing-sm $spacing-md;
+    overflow-x: auto;
+    margin: $spacing-sm 0;
+
+    code {
+      color: #cdd6f4;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  }
+
+  // Inline code
+  :not(pre) > code {
+    background-color: rgba(98, 0, 234, 0.08);
+    color: #6200ea;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 13px;
+  }
+
+  // Lists
+  ul, ol {
+    margin: $spacing-xs 0;
+    padding-left: 20px;
+    li { margin: 3px 0; }
+  }
+
+  // Bold + italic
+  strong { font-weight: 700; }
+  em     { font-style: italic; }
+
+  // Headings Gemini occasionally outputs
+  h1, h2, h3, h4 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: $spacing-sm 0 $spacing-xs;
+  }
+
+  // Blockquotes
+  blockquote {
+    border-left: 3px solid $border-color;
+    padding-left: $spacing-sm;
+    margin: $spacing-xs 0;
+    color: $text-secondary;
+    font-style: italic;
+  }
+
+  // Horizontal rules
+  hr {
+    border: none;
+    border-top: 1px solid $border-color;
+    margin: $spacing-sm 0;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TYPING INDICATOR (animated dots)
+// ═══════════════════════════════════════════════════════════════════════════════
+
 .typing-indicator {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: $spacing-sm 14px;
+  gap: 5px;
+  padding: $spacing-sm 14px !important;
+  min-width: 56px;
 
   span {
+    display: block;
     width: 8px;
     height: 8px;
-    background-color: #aaa;
+    background-color: #b0bec5;
     border-radius: 50%;
-    animation: bounce 1.2s infinite;
+    animation: typing-bounce 1.3s infinite ease-in-out;
 
-    // Stagger each dot's animation
     &:nth-child(1) { animation-delay: 0s; }
-    &:nth-child(2) { animation-delay: 0.2s; }
-    &:nth-child(3) { animation-delay: 0.4s; }
+    &:nth-child(2) { animation-delay: 0.18s; }
+    &:nth-child(3) { animation-delay: 0.36s; }
   }
 }
 
-@keyframes bounce {
-  0%, 60%, 100% { transform: translateY(0); }
-  30%           { transform: translateY(-6px); }
+@keyframes typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    background-color: #b0bec5;
+  }
+  30% {
+    transform: translateY(-7px);
+    background-color: #6200ea;   // Color pulse on peak
+  }
 }
 
-// ─── Input Area ───────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// INPUT AREA
+// ═══════════════════════════════════════════════════════════════════════════════
+
 .input-area {
   flex-shrink: 0;             // Never compress
   background-color: $bg-white;
   border-top: 1px solid $border-color;
-  padding: $spacing-sm $spacing-md;
+  padding: $spacing-sm $spacing-md $spacing-xs;
 
   .input-wrapper {
     display: flex;
     align-items: center;
-    gap: $spacing-sm;
+    gap: $spacing-xs;
     background-color: $bg-light;
-    border: 1px solid $border-color;
-    border-radius: 24px;      // Pill shape — like WhatsApp
+    border: 1.5px solid $border-color;
+    border-radius: 24px;      // Pill shape
     padding: $spacing-xs $spacing-xs $spacing-xs $spacing-md;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
-    &:focus-within {          // When input inside is focused
+    // Focused state (controlled by component via [class.focused])
+    &.focused {
       border-color: #6200ea;
+      box-shadow: 0 0 0 3px rgba(98, 0, 234, 0.1);
     }
   }
 
@@ -284,12 +562,32 @@
     outline: none;
     font-size: 15px;
     color: $text-primary;
+    font-family: inherit;
+    line-height: 1.4;
+    padding: 6px 0;
 
     &::placeholder { color: #aaa; }
-    &:disabled { cursor: not-allowed; opacity: 0.6; }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
   }
 
-  .send-button {
+  .send-btn {
     flex-shrink: 0;
+    transition: transform 0.15s ease;
+
+    &:not(:disabled):hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .input-disclaimer {
+    font-size: 11px;
+    color: $text-secondary;
+    text-align: center;
+    margin: 4px 0 0;
+    opacity: 0.7;
   }
 }

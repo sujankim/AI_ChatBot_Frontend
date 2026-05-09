@@ -1,0 +1,9 @@
+<div class="callback-container">
+  @if (isProcessing) {
+    <mat-spinner diameter="52"/>
+    <p class="callback-message">Completing sign in...</p>
+  }
+  @if (errorMessage) {
+    <p class="callback-error">{{ errorMessage }}</p>
+  }
+</div>

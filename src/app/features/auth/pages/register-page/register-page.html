@@ -1,0 +1,135 @@
+<div class="auth-page-container">
+  <mat-card class="auth-card">
+
+    <div class="auth-card-header">
+      <div class="auth-logo">🤖</div>
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-subtitle">Start chatting with AI — it's free</p>
+    </div>
+
+    <mat-card-content>
+
+      <!-- Google Sign Up Button -->
+      <button
+        mat-stroked-button
+        class="google-sign-in-btn"
+        type="button"
+        (click)="loginWithGoogle()">
+        <img
+          class="google-logo"
+          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+          alt="Google logo"/>
+        Sign up with Google
+      </button>
+
+      <div class="auth-divider">
+        <mat-divider/>
+        <span class="divider-label">or create account with email</span>
+        <mat-divider/>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- Name Field -->
+        <mat-form-field appearance="outline" class="auth-form-field">
+          <mat-label>Full name</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Sujan"
+            autocomplete="name"/>
+          <mat-icon matSuffix>person</mat-icon>
+          @if (hasError('name', 'required')) {
+            <mat-error>Full name is required</mat-error>
+          }
+          @if (hasError('name', 'minlength')) {
+            <mat-error>Name must be at least 2 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Email Field -->
+        <mat-form-field appearance="outline" class="auth-form-field">
+          <mat-label>Email address</mat-label>
+          <input
+            matInput
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            autocomplete="email"/>
+          <mat-icon matSuffix>email</mat-icon>
+          @if (hasError('email', 'required')) {
+            <mat-error>Email is required</mat-error>
+          }
+          @if (hasError('email', 'email')) {
+            <mat-error>Please enter a valid email address</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Password Field -->
+        <mat-form-field appearance="outline" class="auth-form-field">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="hidePassword() ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="new-password"/>
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword.update(v => !v)">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (hasError('password', 'required')) {
+            <mat-error>Password is required</mat-error>
+          }
+          @if (hasError('password', 'minlength')) {
+            <mat-error>Password must be at least 8 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Confirm Password Field -->
+        <mat-form-field appearance="outline" class="auth-form-field">
+          <mat-label>Confirm password</mat-label>
+          <input
+            matInput
+            [type]="hideConfirm() ? 'password' : 'text'"
+            formControlName="confirmPassword"
+            autocomplete="new-password"/>
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hideConfirm.update(v => !v)">
+            <mat-icon>{{ hideConfirm() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (hasFormError('passwordMismatch')) {
+            <mat-error>Passwords do not match</mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="auth-submit-btn"
+          [disabled]="isLoading()">
+          @if (isLoading()) {
+            <mat-spinner diameter="22"/>
+          } @else {
+            Create Account
+          }
+        </button>
+
+      </form>
+    </mat-card-content>
+
+    <div class="auth-card-footer">
+      <p>
+        Already have an account?
+        <a routerLink="/login" class="auth-link">Sign in</a>
+      </p>
+    </div>
+
+  </mat-card>
+</div>

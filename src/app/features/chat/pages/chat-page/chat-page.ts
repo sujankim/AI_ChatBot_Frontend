@@ -18,6 +18,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { TimeAgoPipe } from '../../../../shared/pipes/time-ago-pipe';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { MarkdownPipe } from '../../../../shared/pipes/markdown-pipe';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-chat-page',
@@ -44,6 +45,9 @@ export class ChatPage implements OnInit {
   private readonly chatService = inject(ChatService);
   private readonly dialog = inject(MatDialog);
   private readonly notificationService = inject(NotificationService);
+  private readonly authService = inject(AuthService);
+
+  readonly currentUser = this.authService.currentUser;
 
   @ViewChild('messagesContainer') messageContainer!: ElementRef;
 
@@ -56,6 +60,7 @@ export class ChatPage implements OnInit {
   isCreatingChat = signal<boolean>(false);
   isLoadingMessages = signal<boolean>(false);
   isSendingMessage = signal<boolean>(false);
+  inputFocused = false;
 
   constructor() {
     effect(() => {
@@ -209,6 +214,10 @@ export class ChatPage implements OnInit {
    */
   isActive(chat: ChatSession): boolean {
     return this.activeChat()?.id === chat.id;
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 
   /**
