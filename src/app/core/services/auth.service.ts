@@ -14,6 +14,8 @@ export class AuthService {
   private readonly router = inject(Router);
   private readonly apiUrl = `${environment.apiUrl}/auth`;
 
+  private readonly backendUrl = environment.apiUrl.replace('/api', '');
+
   // ─── Reactive State (Signals) ─────────────────────────────────────────────
 
   /**
@@ -21,8 +23,7 @@ export class AuthService {
    * null = nobody is logged in.
    * Signal: template auto-updates when this changes.
    */
-  private readonly _currentUser =
-    signal<UserProfile | null>(null);
+  private readonly _currentUser = signal<UserProfile | null>(null);
 
   /**
    * Read-only public version of the current user.
@@ -53,8 +54,7 @@ export class AuthService {
    * True if user is logged in (has both token and user data).
    * computed() recalculates when _currentUser signal changes.
    */
-  readonly isLoggedIn = computed(() =>
-    this.accessToken !== null && this._currentUser() !== null);
+  readonly isLoggedIn = computed(() => this.accessToken !== null && this._currentUser() !== null);
 
   // ─── Auth Methods ─────────────────────────────────────────────────────────
 
@@ -112,7 +112,7 @@ export class AuthService {
    * Spring Security handles the redirect to Google and the callback.
    */
   loginWithGoogle(): void {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    window.location.href = `${this.backendUrl}/oauth2/authorization/google`;
   }
 
   // ─── Token Access ─────────────────────────────────────────────────────────
