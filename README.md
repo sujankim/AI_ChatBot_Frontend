@@ -1,59 +1,193 @@
-# ChatbotFrontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.5.
+# 💬 AI Chatbot Frontend
 
-## Development server
+> Modern Angular 21 frontend for an AI-powered chatbot application with responsive UI, JWT authentication, Google OAuth2 login, Markdown rendering, and real-time conversational experience.
 
-To start a local development server, run:
+![Angular](https://img.shields.io/badge/Angular-21-red)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
+![Angular Material](https://img.shields.io/badge/Angular_Material-21-purple)
+![Vercel](https://img.shields.io/badge/Deployment-Vercel-black)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+---
+
+## 🌐 Live Application
+
+- Frontend: https://chatbot-frontend-plum-two.vercel.app
+- Backend API: https://chatbot-backend-a3su.onrender.com
+
+---
+
+# 🚀 Features
+
+- 🔐 JWT Authentication
+- 🌍 Google OAuth2 Login
+- 💬 Persistent Chat Sessions
+- 🤖 Gemini AI Chat Experience
+- 📱 Fully Responsive Design
+- 🎨 Angular Material UI
+- 🧠 Markdown Rendering for AI Responses
+- ⚡ Angular Signals State Management
+- 🔄 Auto Token Refresh
+- 🐳 Docker Support
+- 🚀 Vercel Deployment
+
+---
+
+# 🛠️ Tech Stack
+
+| Technology | Version |
+|------------|---------|
+| Angular | 21 |
+| TypeScript | 5.x |
+| RxJS | 7.x |
+| Angular Material | 21 |
+| SCSS | Latest |
+| Node.js | 22.15.0 |
+
+---
+
+# 🏛️ Frontend Architecture
+
+```text
+src/app/
+├── core/
+├── features/
+├── shared/
+├── styles/
+└── environments/
+```
+
+---
+
+# 📁 Main Features
+
+## Authentication
+
+- Login
+- Register
+- JWT Token Handling
+- OAuth2 Google Login
+- Route Guards
+- HTTP Interceptors
+
+## Chat System
+
+- Create/Delete Chats
+- Persistent History
+- Markdown Messages
+- Typing Indicator
+- Auto Scroll
+- Responsive Sidebar
+
+---
+
+# 💻 Local Development
+
+## Prerequisites
+
+- Node.js 22+
+- Angular CLI
+
+## Clone Repository
+
+```bash
+git clone https://github.com/sujankim/AI_ChatBot_Frontend.git
+cd AI_ChatBot_Frontend
+```
+
+## Install Dependencies
+
+```bash
+npm install
+```
+
+## Start Development Server
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Application runs at:
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```text
+http://localhost:4200
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
+# ⚙️ Environment Configuration
+
+## environment.ts
+
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8080/api'
+};
 ```
 
-## Building
+## environment.prod.ts
 
-To build the project run:
-
-```bash
-ng build
+```typescript
+export const environment = {
+  production: true,
+  apiUrl: 'https://chatbot-backend-a3su.onrender.com/api'
+};
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+# 🐳 Docker
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+## Build Docker Image
 
 ```bash
-ng e2e
+docker build -t chatbot-frontend .
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Run Docker Container
 
-## Additional Resources
+```bash
+docker run -p 80:80 chatbot-frontend
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+
+# 🚀 Deployment
+
+## Vercel Deployment
+
+Build Command:
+
+```bash
+npm run build -- --configuration=production
+```
+
+Output Directory:
+
+```text
+dist/chat-bot-frontend/browser
+```
+
+---
+
+# 🧪 Code Quality
+
+Recommended tools:
+
+- ESLint
+- Prettier
+- Angular Strict Mode
+
+---
+
+# 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+# 👨‍💻 Author
+
+Built by Sujan using Angular 21, Angular Material, and Gemini AI.
