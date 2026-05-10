@@ -137,7 +137,6 @@ export class AuthService {
   // ─── Private Helpers ──────────────────────────────────────────────────────
 
   private handleAuthSuccess(response: AuthResponse): void {
-    console.log('Auth success response:', response); // ← check the full object
     this.accessToken = response.accessToken;
     this._currentUser.set(response.user);
   }
